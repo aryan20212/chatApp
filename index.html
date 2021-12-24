@@ -95,7 +95,8 @@
             }
         })
         socket.on("user-left", function (name) {
-            if (validUser === 1) {
+            if (validUser === 1 && name !== null) {
+
                 appendElement(`${name} left the chat`, "left")
             }
         })
