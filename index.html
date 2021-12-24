@@ -11,9 +11,35 @@
 </head>
 
 <body>
-    <h1>Hello</h1>
+    <div class="h-screen w-screen flex flex-col justify-between">
+
+        <div id="chatCont">
+            <div class="text-gray-700 py-2">Text Message</div>
+        </div>
+
+        <div class="flex">
+            <input id="msi" type="text"
+                class="py-3 px-3  w-full border-x border-y border-slate-200 outline-none text-gray-700"
+                placeholder="Message...">
+            <button class="bg-green-600 px-3 text-white w-40 hover:bg-green-700 transition-colors duration-75"
+                onclick="sendMessage()">Send
+                Message</button>
+        </div>
+    </div>
     <script>
+
         const socket = io()
+        const sendMessage = () => {
+            let message = document.getElementById("msi").value;
+            console.log(message);
+            if (message != "") {
+                socket.emit('chat-message', message);
+                message = '';
+            }
+        }
+        socket.on("chat-message", function (msg) {
+            console.log(msg);
+        })
     </script>
 </body>
 
