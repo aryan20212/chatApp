@@ -82,7 +82,7 @@ header {
 	right: 50%;
 	background-color: #6abfed;
 	border-radius: 5px;
-	transform: translateX(50%);
+	transform: translate(50%, -107px);
 	padding: 20px;
 	z-index: 5;
 }
