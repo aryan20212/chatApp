@@ -19,6 +19,7 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("user-left", users[socket.id]);
 		console.log("User disconnected");
+		delete users[socket.id];
 	});
 
 	socket.on("new-user-joined", (nameOfUser) => {
