@@ -36,6 +36,8 @@ io.on("connection", (socket) => {
 		});
 	});
 
+	let objectLength = Object.keys(users).length;
+	socket.emit("no-users", objectLength - 1);
 	setInterval(() => {
 		let objectLength = Object.keys(users).length;
 		socket.emit("no-users", objectLength - 1);
