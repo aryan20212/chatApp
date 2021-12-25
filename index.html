@@ -21,11 +21,22 @@
     <div class="container messageContainer">
         <br>
         <br>
+        <div id="no-users">No of users: </div>
     </div>
     <div class="shade"></div>
     <div class="nameModal">
         <h2>Enter Your Name</h2>
-        <input type="text" class="form-control my-4" id="userName" placeholder="Enter Your Name">
+        <form action="" onsubmit="event.preventDefault(); verifyName()">
+
+            <input type="text" class="form-control my-4" id="userName" placeholder="Enter Your Name" autocomplete="off">
+        </form>
+        <div class="invalid-feedback fw-bold mb-3">
+            Please provide a valid Name.
+        </div>
+
+
+
+
         <button class="btn btn-primary" id="subName">Submit</button>
     </div>
     <form action="" id="messageForm">
@@ -34,45 +45,34 @@
 
                 <input type="text" id="messageInp" class="form-control" placeholder="Write a Message"
                     aria-label="Recipient's username" aria-describedby="button-addon2">
-                <button class="btn btn-outline-primary" type="button" onclick="sendMessage()" id="messageBtn">Send <i
-                        class="fas fa-paper-plane"></i></button>
+
+                <button class="btn btn-outline-primary" type="button" onclick="sendMessage()" id="messageBtn">Send
+                    <i class="fas fa-paper-plane"></i></button>
             </div>
 
         </div>
     </form>
     <script src="https://kit.fontawesome.com/d3882cfae1.js" crossorigin="anonymous"></script>
     <script>
+        // Audio Related
         let myaudio = new Audio('static/ting.mp3');
         myaudio.volume = 0.2;
 
         let chatCont = document.getElementsByClassName("messageContainer")[0];
+
+        // Preventing the form from being submitted and run the sendmessage function
         let form = document.getElementById("messageForm");
         form.addEventListener("submit", (event) => {
             event.preventDefault();
             sendMessage()
         })
-        function appendElement(message, position) {
-            const messageElement = document.createElement("div")
-            messageElement.innerHTML = message;
-            messageElement.classList.add("message", position)
-            chatCont.appendChild(messageElement);
+        const focusName = () => {
+            let UserName = document.getElementById("userName");
+            UserName.focus()
+
         }
-        const socket = io()
-        let validUser = 0;
-        let userS = document.getElementById("subName");
 
-        userS.addEventListener("click", () => {
-            let UserName = document.getElementById("userName").value;
-            validUser = 1;
-            let name = UserName;
-            socket.emit("new-user-joined", name)
-            let shade = document.getElementsByClassName("shade")[0];
-            let modal = document.getElementsByClassName("nameModal")[0];
-            shade.style.display = "none";
-            modal.style.display = "none"
-
-        })
-
+        // Send message Function
         const sendMessage = () => {
             let message = document.getElementById("messageInp");
             if (message.value !== "") {
@@ -82,22 +82,86 @@
                 message.value = '';
             }
         }
+
+        // AppendElement funtion for adding elements.
+        function appendElement(message, position) {
+            const messageElement = document.createElement("div")
+            messageElement.innerText = message;
+            messageElement.classList.add("message", position)
+            chatCont.appendChild(messageElement);
+
+            chatCont.scrollTo(0, chatCont.scrollHeight);
+        }
+        function checkAndFill() {
+            if (localStorage.getItem("name") !== null) {
+                document.getElementById("userName").value = localStorage.getItem("name");
+            }
+        }
+        // initialising socket io
+        const socket = io()
+        window.onload = () => {
+            focusName();
+            checkAndFill()
+        }
+        // Getting and verifying the name TODO:
+        let validUser = false;
+        let userS = document.getElementById("subName");
+
+        userS.addEventListener("click", () => {
+            verifyName()
+        })
+        function verifyName() {
+            let UserName = document.getElementById("userName");
+            if (UserName.value !== "") {
+                validUser = true;
+                let name = UserName.value;
+                socket.emit("new-user-joined", name)
+                let shade = document.getElementsByClassName("shade")[0];
+                let modal = document.getElementsByClassName("nameModal")[0];
+                shade.style.display = "none";
+                modal.style.display = "none"
+                localStorage.setItem("name", UserName.value)
+                document.getElementById("messageInp").focus()
+
+            }
+            else {
+                UserName.classList.add("is-invalid")
+                UserName.focus()
+
+            }
+        }
+
+
+        //    Related to socket connctions
         socket.on("user-joined", (name) => {
-            if (validUser === 1) {
+            if (validUser) {
                 appendElement(`${name} Joined The Chat`, "left")
             }
         })
 
         socket.on("chat-message", function (msgObj) {
-            if (validUser === 1) {
+            if (validUser) {
                 appendElement(`${msgObj.name}: ${msgObj.message}`, "left")
                 myaudio.play()
             }
         })
         socket.on("user-left", function (name) {
-            if (validUser === 1 && name !== null) {
-
+            if (validUser && name !== null) {
                 appendElement(`${name} left the chat`, "left")
+            }
+        })
+        socket.on("no-users", function (no) {
+
+            if (no === -1 || no === 0) {
+                if (document.getElementById("no-users").innerHTML !== "<strong>No Active Users</strong>")
+                    document.getElementById("no-users").innerHTML = "<strong>No Active Users</strong>";
+            }
+            else {
+                if (document.getElementById("no-users").innerHTML !== `No of active users : ${no} `) {
+
+                    document.getElementById("no-users").innerHTML = `No of active users : ${no} `;
+                }
+
             }
         })
     </script>

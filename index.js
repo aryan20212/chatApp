@@ -35,4 +35,9 @@ io.on("connection", (socket) => {
 			name: users[socket.id],
 		});
 	});
+
+	setInterval(() => {
+		let objectLength = Object.keys(users).length;
+		socket.emit("no-users", objectLength - 1);
+	}, 1000);
 });

@@ -35,8 +35,30 @@ header {
 	border-radius: 5px;
 	min-height: 70vh;
 	overflow: auto;
+	height: 50vh;
 	background-color: rgba(0, 0, 0, 0.144);
 }
+/* width */
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
 .message {
 	background-color: #ecf0f1;
 	width: max-content;
@@ -47,6 +69,8 @@ header {
 	-ms-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
+	max-width: 40%;
+	word-wrap: break-word;
 }
 .right {
 	float: right;
@@ -85,6 +109,8 @@ header {
 	transform: translate(50%, -107px);
 	padding: 20px;
 	z-index: 5;
+	width: 50vw;
+	max-width: 500px;
 }
 .shade {
 	height: 100vh;
@@ -94,4 +120,22 @@ header {
 	left: 0px;
 	background: #0d10127a;
 	z-index: 4;
+}
+#no-users {
+	position: fixed;
+	top: 5px;
+	right: 10px;
+	text-align: right;
+}
+
+@media only screen and (max-width: 467px) {
+	header h1 {
+		font-size: 19px;
+	}
+	.message {
+		max-width: 60%;
+	}
+	.nameModal {
+		width: 86vw;
+	}
 }
